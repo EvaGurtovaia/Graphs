@@ -1,6 +1,12 @@
+import random
+
+from stack import Stack
+
+
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -45,6 +51,8 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for i in range(1, num_users+1):
+            self.add_user(i)
 
         # Create friendships
 
