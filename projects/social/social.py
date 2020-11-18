@@ -55,6 +55,26 @@ class SocialGraph:
             self.add_user(i)
 
         # Create friendships
+        n = len(self.users)
+        for user_id in self.users:
+            for num_friends in range(random.randrange(1, avg_friendships)):
+                # friend_id = number between 1 and n (number of users)
+                friend_id = random.randrange(1, n)
+
+                # friend_id cannot be assigned to user_id
+                if friend_id == user_id:
+                    # if friend_id is last person in self.users:
+                    if friend_id == n:
+                        friend_id -= 1
+                    else:
+                        friend_id += 1
+
+                # friendships are bi-directional
+                if friend_id not in self.friendships[user_id]:
+                    self.add_friendship(user_id, friend_id)
+                    # assigns current user to the friend's-friendslist
+                    if user_id not in self.friendships[friend_id]:
+                        self.add_friendship(friend_id, user_id)
 
     def get_all_social_paths(self, user_id):
         """
@@ -67,6 +87,31 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        stack = Stack()
+        stack.push([user_id])
+        # dictionary for checking if users aren't connected to the user_id
+        not_visited = self.users
+
+        while stack.size() > 0:
+            path = stack.pop()
+            user = path[-1]
+
+            if user in not_visited:
+                # if users are connected to user_id, remove from dict
+                not_visited.pop(user)
+                # will return a dictionary of users NOT connected to user_id
+
+            if user not in visited:
+                visited[user] = path
+
+                for friend in self.friendships[user]:
+                    if friend not in visited:
+                        new = list(path)
+                        new.append(friend)
+                        stack.push(new)
+
+        if len(not_visited) > 0:
+            visited['users not connected'] = list(not_visited.keys())
         return visited
 
 
