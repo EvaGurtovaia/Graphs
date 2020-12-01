@@ -29,6 +29,7 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 #traversal_path = []
 
+# look up dictionary for quickly obtaining reverse direction
 reverse_direction = {"n": "s", "s": "n", "e": "w", "w": "e"}
 
 # my code
@@ -56,7 +57,8 @@ def dft_recursive(graph, cur_room, prev=None, direction=None, visited=None, path
     graph[cur_room.id] = exits
     visited.add(cur_room)
 
-    # skip this if NOT coming from a room (on first time through)
+    # if coming from a room, then link prev/current rooms together
+    # skipped on the first call when prev is none
     if prev is not None:
         path.append(direction)
         # previous room and current room point/reference each other ('connect' them)
@@ -64,17 +66,15 @@ def dft_recursive(graph, cur_room, prev=None, direction=None, visited=None, path
         graph[cur_room.id][reverse_direction[direction]] = prev.id
 
     # find exits in current room that haven't been explored yet (exit == "?")
-    for exit_ in cur_room.get_exits():
-        # if graph[cur_room.id][exit_] == "?":
-        # if the current room exits have NOT been explored:
-        if cur_room.get_room_in_direction(exit_) not in visited:
+    for _dir in cur_room.get_exits():
+        # if the current room exits have not been explored:
+        if cur_room.get_room_in_direction(_dir) not in visited:
             # explore the new, unexplored room for exits and a new path
             _prev = cur_room
-            _dir = exit_
-            _cur_room = cur_room.get_room_in_direction(exit_)
+            _cur_room = cur_room.get_room_in_direction(_dir)
             dft_recursive(graph, _cur_room, _prev, _dir, visited, path)
             # after new room is explored, and returns the path it took, assign to path list
-            path.append(reverse_direction[exit_])
+            path.append(reverse_direction[_dir])
 
     return path
 
